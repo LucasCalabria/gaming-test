@@ -1,10 +1,7 @@
 import cv2
 import numpy as np
 
-name_image_original = 'imagem_original.png'
-name_image_recreated = 'imagem_recriada.png'
-
-images_path = 'data/'
+from data import global_variables
 
 
 def mse(img1, img2):
@@ -16,21 +13,27 @@ def mse(img1, img2):
 
 
 def compare_images():
-    print("Importando imagens")
-    image_original = cv2.imread(images_path + name_image_original)
-    image_recreated = cv2.imread(images_path + name_image_recreated)
+    for i in range(1, global_variables.SAMPLES_NUM + 1):
+        print("Importando imagem: " + str(i))
+        images_path = 'data/' + str(i) + '/'
 
-    print("Convertendo imagens para grayscale")
-    image_original = cv2.cvtColor(image_original, cv2.COLOR_BGR2GRAY)
-    image_recreated = cv2.cvtColor(image_recreated, cv2.COLOR_BGR2GRAY)
+        name_image_original = 'imagem_original-' + str(i) + '.png'
+        name_image_recreated = 'imagem_recriada-' + str(i) + '.png'
 
-    print("Calculando Mean Squared Error")
-    error, diff = mse(image_original, image_recreated)
+        image_original = cv2.imread(images_path + name_image_original)
+        image_recreated = cv2.imread(images_path + name_image_recreated)
 
-    print("Image matching Error between the two images:", error)
-    cv2.imshow("difference", diff)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+        image_original = cv2.cvtColor(image_original, cv2.COLOR_BGR2GRAY)
+        image_recreated = cv2.cvtColor(image_recreated, cv2.COLOR_BGR2GRAY)
+
+        error, diff = mse(image_original, image_recreated)
+
+        print("Image matching Error between the two images:", error)
+
+        if i == 10:
+            cv2.imshow("difference", diff)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
