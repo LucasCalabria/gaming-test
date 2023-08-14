@@ -11,7 +11,7 @@ path_variables = 'data/'
 
 # TODO
 #  Fazer mais comparacoes das imagens,
-#  Aplicar para outras telas do jogo
+#  Aplicar para tela de score
 
 
 def draw_background_image(canvas, draw, image):
@@ -20,7 +20,7 @@ def draw_background_image(canvas, draw, image):
 
     image_path = path_assets + image.get('path')
 
-    background = Image.open(image_path)
+    background = Image.open(image_path).convert("RGBA")
     background_ratio = background.width / background.height
 
     background_height = int(global_variables.WINDOW_HEIGHT - y)
