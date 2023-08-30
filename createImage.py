@@ -3,15 +3,11 @@ from PIL import Image, ImageOps, ImageFont, ImageDraw
 
 from data import global_variables
 
-
-difSize = global_variables.WINDOW_WIDTH / global_variables.VIRTUAL_WIDTH
-
-path_assets = 'assets/'
+path_assets = 'assets/'  # TODO trocar caminho para diretorio do jogo
+#path_assets = 'D:/Documents/tcc/flappybird/'
 path_variables = 'data/'
 
-# TODO
-#  Fazer mais comparacoes das imagens,
-#  Aplicar para tela de score
+difSize = global_variables.WINDOW_WIDTH / global_variables.VIRTUAL_WIDTH
 
 
 def draw_background_image(canvas, draw, image):
@@ -84,8 +80,7 @@ def draw_texts(draw, prints):
 
 
 def create_image():
-    for i in range(1, global_variables.SAMPLES_NUM+1):
-
+    for i in range(1, global_variables.SAMPLES_NUM + 1):
         # Importando as variáveis dos módulos
         images = importlib.import_module("data." + str(i) + ".images")
         prints = importlib.import_module("data." + str(i) + ".prints")
