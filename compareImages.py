@@ -66,12 +66,24 @@ def compare_all(threshold, threshold_bug, gray=False):
 
         all_diffs[i] = num_different_pixels
 
-        # Exibe imagens com possivel bugs
+        # Retorna imagens com possivel bugs
         if num_different_pixels > threshold_bug:
             bug_diffs[f'{i}'] = num_different_pixels
             # print(f"Imagem: {i}\tQuantidade de pixels de diferença: {num_different_pixels}")
 
     return all_diffs, bug_diffs
+
+
+def divide_image_into_areas(image, area_size):
+    height, width, _ = image.shape
+    areas = []
+
+    for y in range(0, height, area_size):
+        for x in range(0, width, area_size):
+            area = image[y:y + area_size, x:x + area_size]
+            areas.append(area)
+
+    return areas
 
 
 def has_consecutive_keys(dictionary):
@@ -86,21 +98,72 @@ def has_consecutive_keys(dictionary):
     return False
 
 
+def check_all_distortion(square_size=50, distortion_threshold=95):
+    results = []
+    results_bug = {}
+    for i in range(1, global_variables.SAMPLES_NUM + 1):
+        images_path = 'data/' + str(i) + '/'
+
+        name_image_original = 'imagem_original-' + str(i) + '.png'
+
+        image = cv2.imread(images_path + name_image_original)
+
+        # Divide a área em quadrados
+        squares = divide_image_into_areas(image, square_size)
+
+        # Testa a distorção em cada quadrado
+        has_artifact = detect_distortion_in_squares(squares,distortion_threshold)
+
+        results.append(has_artifact)
+
+        if has_artifact:
+            results_bug[f'{i}'] = has_artifact
+
+    return results, results_bug
+
+
+def detect_distortion_in_squares(squares, distortion_threshold=95):
+    for idx, square in enumerate(squares):
+        gray_square = cv2.cvtColor(square, cv2.COLOR_BGR2GRAY)
+        sobelx = cv2.Sobel(gray_square, cv2.CV_64F, 1, 0, ksize=3)
+        sobely = cv2.Sobel(gray_square, cv2.CV_64F, 0, 1, ksize=3)
+        gradient_magnitude = np.sqrt(sobelx**2 + sobely**2)
+        mean_gradient = np.mean(gradient_magnitude)
+
+        if mean_gradient > distortion_threshold:
+            return True
+
+    return False
+
 def main():
+    bug_found = False
+
     # Teste apenas das formas
     all_diffs, bug_diffs = compare_all(75, 1000, True)
     if has_consecutive_keys(bug_diffs):
-        print("Bug visual encontrado")
-        return
+        print("Bug visual encontrado - teste de forma")
+        bug_found = True
 
     # Teste com cores
     all_diffs, bug_diffs = compare_all(75, 750)
     if has_consecutive_keys(bug_diffs):
-        print("Bug visual encontrado")
-        return
+        print("Bug visual encontrado - teste de cor")
+        bug_found = True
 
-    print("Nenhum bug encontrado")
+    # Teste de distorcao
+    results, results_bug = check_all_distortion(square_size=100,distortion_threshold=80)
+    if has_consecutive_keys(results_bug):
+        print("Bug visual encontrado - teste de distorcao")
+        bug_found = True
+
+    if not bug_found:
+        print("Nenhum bug encontrado")
 
 
 if __name__ == '__main__':
     main()
+
+
+# cv2.imshow("Artifact Area", result_image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
