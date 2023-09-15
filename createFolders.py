@@ -3,7 +3,7 @@ import shutil
 
 path = 'C:/Users/lucas/PycharmProjects/tcc/data/'
 
-num_folders = 10
+num_folders = 30
 delete_folder = False
 
 if delete_folder:
@@ -11,6 +11,7 @@ if delete_folder:
         print("Removendo pasta data")
         shutil.rmtree(path)
 
+if not os.path.exists(path):
     print("Criando pasta data")
     os.makedirs(path)
 

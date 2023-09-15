@@ -4,15 +4,15 @@ import numpy as np
 # Defina a intensidade da distorção (valores mais altos geram mais distorção)
 intensity = 60
 kernel_size = 15
-intensity_tearing = 10
-tear_width = 10
-num_artifacts = 25
+intensity_tearing = 15
+tear_width = 15
+num_artifacts = 75
 artifact_intensity = 30
 
-image_path = 'assets/imagens/bird.png'
-output_path = 'bird-blur.png'
+image_path = 'assets/imagens/pipe.png'
+output_path = 'pipe-art.png'
 
-choice = 5
+choice = 4
 
 
 def apply_artifacts(img):
@@ -49,11 +49,6 @@ def apply_tearing(img):
     return torn_image
 
 
-def apply_blur(img):
-    blurred_image = cv2.GaussianBlur(img, (kernel_size, kernel_size), 0)
-    return blurred_image
-
-
 def apply_distortion(img):
     height, width, _ = img.shape
 
@@ -80,15 +75,13 @@ else:
     alpha_channel = None
     image_without_alpha = image
 
+# Aplique a distorção apenas na parte sem o canal alfa
 if choice == 0:
-    # Aplique a distorção apenas na parte sem o canal alfa
     result = apply_distortion(image_without_alpha)
 elif choice == 1:
     result = apply_tearing(image_without_alpha)
-elif choice == 2:
-    result = apply_artifacts(image_without_alpha)
 else:
-    result = apply_blur(image_without_alpha)
+    result = apply_artifacts(image_without_alpha)
 
 # Combine a parte distorcida com o canal alfa, se existir
 if has_alpha_channel:
